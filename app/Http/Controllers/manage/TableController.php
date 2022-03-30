@@ -4,6 +4,7 @@ namespace App\Http\Controllers\manage;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Table;
 
 
 class TableController extends Controller
@@ -15,7 +16,8 @@ class TableController extends Controller
      */
     public function index()
     {
-        return view('manage/table.index');
+        $tables = Table::all();
+        return view('manage/table.index')->with('tables', $tables);
     }
 
     /**
@@ -25,7 +27,7 @@ class TableController extends Controller
      */
     public function create()
     {
-        //
+        return view('manage/table.create');
     }
 
     /**
@@ -36,7 +38,18 @@ class TableController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:tables',
+            'status' => 'required|in:Available,Unavailable'
+        ]);
+
+        $table = new Table();
+        $table->name = $request->input('name');
+        $table->status = $request->input('status');
+        if ($table->save()) {
+            Session()->flash('status', "Table is Added!");
+        }
+        return (redirect('manage/table'));
     }
 
     /**
@@ -58,7 +71,8 @@ class TableController extends Controller
      */
     public function edit($id)
     {
-        //
+        $table = Table::find($id);
+        return view('manage/table.create')->with('table',$table);
     }
 
     /**
@@ -70,7 +84,18 @@ class TableController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'status' => 'required|in:Available,Unavailable'
+        ]);
+
+        $table = Table::find($id);
+        $table->name = $request->input('name');
+        $table->status = $request->input('status');
+        if ($table->save()) {
+            Session()->flash('status', "Table is Updated!");
+        }
+        return (redirect('manage/table'));
     }
 
     /**
@@ -81,6 +106,11 @@ class TableController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (Table::destroy($id)) {
+            Session()->flash('status', "Table is Deleted!");
+        } else {
+            Session()->flash('status', "Something went wrong,try again later");
+        }
+        return (redirect('/manage/table'));
     }
 }
