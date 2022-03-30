@@ -1,0 +1,19 @@
+a {
+    color: #343a40;
+}
+a:hover{
+    text-decoration: none;
+    color: #343a40;
+}
+
+img {
+    margin: 2pt;
+}
+
+
+.table-image {
+    td, th {
+      vertical-align: middle;
+    }
+  }
+  
